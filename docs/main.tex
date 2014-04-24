@@ -140,11 +140,40 @@
 
 \clearpage
 
+\section{Opis problemu}
+Mierzymy się z problemem napisania sztucznej inteligencji, do gry w kółko i krzyżyk na planszy o wielkości $NxN$ pól.
+Podstawą działania sztucznej inteligencji ma być genetyczny algorytm koewolucyjny, różniący się od klasycznego algorytmu ewolucyjnego zależnością oceny osobników od ich interakcji pomiędzy gatunkami. Za pomocą techniki ewolucji program ma nauczyć się grać jak najlepiej. 
+\section{Pomysł rozwiązania}
+Do implementacji inteligencji w grze użyjemy sieci neuronowej. Poszczególne sieci neuronowe będą osobnikami w populacjach używanych przez algorytm ewolucyjny. Stworzymy dwie osobne populacje osobników dzieląc stworzone wcześniej $K$ sieci neuronowych o losowych wagach na dwie równoliczne grupy - gatunki. Koewulucję zaimplementujemy na zasadzie rozgrywej pomiędzy osobnikami z różnych gatunków. Poprzez funkcję oceny zależną od wyników rozgrywek, oraz krzyżowanie i mutację, będziemy ulepszać sieci neuronowe w obu gatunkach. W ten będziemy próbowali osiągnąć najlepszy stopień nauki manipulując wielkością populacji, ilością rozgrywanych potyczek oraz prawdopodobieństwami krzyżowania i mutacji. Chcemy wprowadzić również możliwość elitarnego przejścia najlepszych osobników do kolejnej generacji.
+\section{Reprezentacja gry}
+Planszę reprezentować będziemy jako macierz z polami ponumerowanymi od 1 do $N^2$ od lewej do prawej. Ułożenie poszczególnych znaków kółka i krzyżyka będziemy reprezentować jako liczby:
+\begin{itemize}
+	\item $0$ -- pole puste
+	\item $1$ -- kółko
+	\item $2$ -- krzyżyk
+\end{itemize}
+Potyczki pomiędzy osobnikami będą oceniane w skali punktowej:
+\begin{itemize}
+	\item $1$ -- zwycięstwo
+	\item $0$ -- remis
+	\item $-2$ -- porażka
+\end{itemize}
+Chcemy w ten sposób wykreować strategię nieprzegrywającą. 
+
+\section{Śieć neuronowa}
+Sieć neuronowa będzie składała się z 3 warstw:
+1) warstwy wejścia - zawierającej $2*N^2$ neuronów, gdzie na wejściu każdego będą odpowiednio 0 lub 1 jeśli dane kólko lub krzyżyk jest na danym polu. Zatem mamy $N^2$ neuronów dla krzyżyków i tyle samo dla kółek.
+2) Następnie będzie $S$ (wartość ustawiana w konfiguracji) neuronów pośrednich (ukrytych), które będą przetwarzały wejście.
+3) W ostatniej warstwie będzie znajdowało się $N^2$ neuronów wyjściowych. Wartość na neuronach wyjściowych będzie wskazywała jak dobre jest ustawienie znaku na danym polu. 
+każdy neuron z warstwy 1 będzie miał połączenie z każdym neuronem warstwy 2, natomiast każdy neuron warstwy 2 będzie miał połączenia z wszystkimi neuronami warstwy 3. 
+
+Algorytm wyeliminuje wszystkie zajęte już pola, a wśród pozostałych wybierze ten dla którego neuron ma największą wartość wyjściową.
+
 \section{Generowanie pokoleń}
 Kolejne pokolenia będą generowane tak, aby osobniki były coraz lepsze. W naszej aplikacji mają one jak najlepiej radzić sobie w rozgyrwce w tic-tac-toe. Należy zapewnić również element losowy, aby rozwiązania nie ograniczyły się tylko do małej części przestrzeni. Zostanie to osiągnięte poprzez zastosowanie krzyżowania oraz mutacji. 
 
 \subsection{Turniej}
-W naszej koewolucyjnej metodzie będziemy mieli 2 populacje, które będą ze sobą konkurować, ale nie będą wymieniały się materiałem genetycznym. Osobniki będą rozgrywały partie, ale tylko z osobnikami, które należą do drugiej populacji. Nie będzie możliwy pojedynek dwóch osobników należących do tej samej populacji. Dobre porównanie osobników w danej populacji wymagałoby rozegrania wszystkich możliwych kombinacji spotkań (każdy osobnik z populacji A rozegra po jednym spotkaniu z osobnikami z populacji B). Może się to okazać czasochłonne. Szacujemy, że turniej populacji z 1000 osobników mógłby być czasochłonny. W związku z tym w aplikacji będzie istniało pole, w którym będzie można zdefinowiać ile pojedynków ma rozegrać każdy z osobników. Przeciwnicy będą dobierani losowo. Ilość punktów zdobytych podczas turnieju będzie określało siłę osobnika (1pkt za wygraną, 0,5 za remis i 0pkt za porażkę).
+W naszej koewolucyjnej metodzie będziemy mieli 2 populacje, które będą ze sobą konkurować, ale nie będą wymieniały się materiałem genetycznym. Osobniki będą rozgrywały partie, ale tylko z osobnikami, które należą do drugiej populacji. Nie będzie możliwy pojedynek dwóch osobników należących do tej samej populacji. Dobre porównanie osobników w danej populacji wymagałoby rozegrania wszystkich możliwych kombinacji spotkań (każdy osobnik z populacji A rozegra po jednym spotkaniu z osobnikami z populacji B). Może się to okazać czasochłonne. Szacujemy, że turniej populacji z 1000 osobników mógłby być czasochłonny. W związku z tym w aplikacji będzie istniało pole, w którym będzie można zdefinowiać ile pojedynków ma rozegrać każdy z osobników. Przeciwnicy będą dobierani losowo. Ilość punktów (suma) zdobytych podczas turnieju będzie określało siłę osobnika.
 
 \subsection{Krzyżowanie}
 Proces krzyżowania będzie polegał na stworzeniu osobników. Wszystkie pokolenia będą równoliczne. Do stworzenia nowego osobnika będą potrzebne dwa z poprzedniego pokolenia. Będą one wybierane w losowy sposób, ale rozkład nie będzie jednostajny.
@@ -168,6 +197,10 @@ Po wyborze osobników w sposób losowy będą wybierane węzły, które zostaną
 
 \subsection{Mutacje}
 Po etapie krzyżowania nowo utworzone osobniki będą poddane mutacji. Mutacji będzie podlegał jeden węzeł. Mutacja nie będzie zachodziła zawsze i w programie będzie istniało miejsce do określenia prawdopodobieństwa mutacji. W mutowanym węźle zostanie w sposób losowy zmieniona wartość.
+
+\subsection{Nauka i testy}
+Zaimplementujemy algorytm grający w sposób pseudolosowy i przetestujemy wynik dużej ilości gier nienauczonych osobników populacji (wszystkich po kolei po parę razy). Następnie przeprowadzimy proces nauki i ponownie przeprowadzimy ten sam test. Będziemy badać efekt nauki dla różnych wartości zmiennych w programie takich jak ilość neuronów pośrednich, ilość potyczek czy wielkość populacji aby wybrać optymalne wartości. 
+
 
 \clearpage
 
