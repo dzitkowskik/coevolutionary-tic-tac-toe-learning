@@ -146,28 +146,32 @@ Podstawą działania sztucznej inteligencji ma być genetyczny algorytm koewoluc
 \section{Pomysł rozwiązania}
 Do implementacji inteligencji w grze użyjemy sieci neuronowej. Poszczególne sieci neuronowe będą osobnikami w populacjach używanych przez algorytm ewolucyjny. Stworzymy dwie osobne populacje osobników dzieląc stworzone wcześniej $K$ sieci neuronowych o losowych wagach na dwie równoliczne grupy - gatunki. Koewulucję zaimplementujemy na zasadzie rozgrywej pomiędzy osobnikami z różnych gatunków. Poprzez funkcję oceny zależną od wyników rozgrywek, oraz krzyżowanie i mutację, będziemy ulepszać sieci neuronowe w obu gatunkach. W ten będziemy próbowali osiągnąć najlepszy stopień nauki manipulując wielkością populacji, ilością rozgrywanych potyczek oraz prawdopodobieństwami krzyżowania i mutacji. Chcemy wprowadzić również możliwość elitarnego przejścia najlepszych osobników do kolejnej generacji.
 \section{Reprezentacja gry}
-Planszę reprezentować będziemy jako macierz z polami ponumerowanymi od 1 do $N^2$ od lewej do prawej. Ułożenie poszczególnych znaków kółka i krzyżyka będziemy reprezentować jako liczby:
+Planszę reprezentować będziemy jako macierz z polami ponumerowanymi od 1 do $N^2$ od lewej do prawej. \\
+\includegraphics[scale=0.95]{diagrams/CoevolutionaryTicTacToe2} \\
+Ułożenie poszczególnych znaków kółka i krzyżyka będziemy reprezentować jako liczby: \\
 \begin{itemize}
 	\item $0$ -- pole puste
 	\item $1$ -- kółko
 	\item $2$ -- krzyżyk
 \end{itemize}
-Potyczki pomiędzy osobnikami będą oceniane w skali punktowej:
+\includegraphics[scale=1]{diagrams/CoevolutionaryTicTacToe3} \\
+Potyczki pomiędzy osobnikami będą oceniane w skali punktowej: \\
 \begin{itemize}
 	\item $1$ -- zwycięstwo
 	\item $0$ -- remis
 	\item $-2$ -- porażka
 \end{itemize}
-Chcemy w ten sposób wykreować strategię nieprzegrywającą. 
+Chcemy w ten sposób wykreować strategię nieprzegrywającą. \\
 
 \section{Śieć neuronowa}
+\includegraphics[scale=1]{diagrams/CoevolutionaryTicTacToe}
 Sieć neuronowa będzie składała się z 3 warstw:
 1) warstwy wejścia - zawierającej $2*N^2$ neuronów, gdzie na wejściu każdego będą odpowiednio 0 lub 1 jeśli dane kólko lub krzyżyk jest na danym polu. Zatem mamy $N^2$ neuronów dla krzyżyków i tyle samo dla kółek.
 2) Następnie będzie $S$ (wartość ustawiana w konfiguracji) neuronów pośrednich (ukrytych), które będą przetwarzały wejście.
 3) W ostatniej warstwie będzie znajdowało się $N^2$ neuronów wyjściowych. Wartość na neuronach wyjściowych będzie wskazywała jak dobre jest ustawienie znaku na danym polu. 
-każdy neuron z warstwy 1 będzie miał połączenie z każdym neuronem warstwy 2, natomiast każdy neuron warstwy 2 będzie miał połączenia z wszystkimi neuronami warstwy 3. 
-
-Algorytm wyeliminuje wszystkie zajęte już pola, a wśród pozostałych wybierze ten dla którego neuron ma największą wartość wyjściową.
+każdy neuron z warstwy 1 będzie miał połączenie z każdym neuronem warstwy 2, natomiast każdy neuron warstwy 2 będzie miał połączenia z wszystkimi neuronami warstwy 3. \\
+Algorytm wyeliminuje wszystkie zajęte już pola, a wśród pozostałych wybierze ten dla którego neuron ma największą wartość wyjściową. \\
+\includegraphics[scale=1]{diagrams/CoevolutionaryTicTacToe4} \\
 
 \section{Generowanie pokoleń}
 Kolejne pokolenia będą generowane tak, aby osobniki były coraz lepsze. W naszej aplikacji mają one jak najlepiej radzić sobie w rozgyrwce w tic-tac-toe. Należy zapewnić również element losowy, aby rozwiązania nie ograniczyły się tylko do małej części przestrzeni. Zostanie to osiągnięte poprzez zastosowanie krzyżowania oraz mutacji. 
