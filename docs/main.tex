@@ -164,7 +164,7 @@ Potyczki pomiędzy osobnikami będą oceniane w skali punktowej: \\
 Chcemy w ten sposób wykreować strategię nieprzegrywającą. \\
 
 \section{Śieć neuronowa}
-\includegraphics[scale=1]{diagrams/CoevolutionaryTicTacToe}
+\includegraphics[scale=1]{diagrams/CoevolutionaryTicTacToe} \\
 Sieć neuronowa będzie składała się z 3 warstw:
 1) warstwy wejścia - zawierającej $2*N^2$ neuronów, gdzie na wejściu każdego będą odpowiednio 0 lub 1 jeśli dane kólko lub krzyżyk jest na danym polu. Zatem mamy $N^2$ neuronów dla krzyżyków i tyle samo dla kółek.
 2) Następnie będzie $S$ (wartość ustawiana w konfiguracji) neuronów pośrednich (ukrytych), które będą przetwarzały wejście.
@@ -174,7 +174,7 @@ Algorytm wyeliminuje wszystkie zajęte już pola, a wśród pozostałych wybierz
 \includegraphics[scale=1]{diagrams/CoevolutionaryTicTacToe4} \\
 
 \section{Generowanie pokoleń}
-Kolejne pokolenia będą generowane tak, aby osobniki były coraz lepsze. W naszej aplikacji mają one jak najlepiej radzić sobie w rozgyrwce w tic-tac-toe. Należy zapewnić również element losowy, aby rozwiązania nie ograniczyły się tylko do małej części przestrzeni. Zostanie to osiągnięte poprzez zastosowanie krzyżowania oraz mutacji. 
+Kolejne pokolenia będą generowane tak, aby osobniki były coraz lepsze. W naszej aplikacji mają one jak najlepiej radzić sobie w rozgyrwce w kółko i krzyżyk. Należy zapewnić również element losowy, aby rozwiązania nie ograniczyły się tylko do małej części przestrzeni. Zostanie to osiągnięte poprzez zastosowanie krzyżowania oraz mutacji. 
 
 \subsection{Turniej}
 W naszej koewolucyjnej metodzie będziemy mieli 2 populacje, które będą ze sobą konkurować, ale nie będą wymieniały się materiałem genetycznym. Osobniki będą rozgrywały partie, ale tylko z osobnikami, które należą do drugiej populacji. Nie będzie możliwy pojedynek dwóch osobników należących do tej samej populacji. Dobre porównanie osobników w danej populacji wymagałoby rozegrania wszystkich możliwych kombinacji spotkań (każdy osobnik z populacji A rozegra po jednym spotkaniu z osobnikami z populacji B). Może się to okazać czasochłonne. Szacujemy, że turniej populacji z 1000 osobników mógłby być czasochłonny. W związku z tym w aplikacji będzie istniało pole, w którym będzie można zdefinowiać ile pojedynków ma rozegrać każdy z osobników. Przeciwnicy będą dobierani losowo. Ilość punktów (suma) zdobytych podczas turnieju będzie określało siłę osobnika.
@@ -196,24 +196,15 @@ gdzie:
 	\item $n$ - liczba osobników w populacji
 \end{itemize}
 
-%sprawdzić ten akapit:
-Po wyborze osobników w sposób losowy będą wybierane węzły, które zostaną wybrane z jednego osbnika, a pozostałe zostną wybrane z drugiego osobnika.
+Po wyborze osobników, w sposób losowy będą wybierane węzły, które zostaną wybrane z jednego osobnika, a pozostałe zostaną wybrane z drugiego osobnika.
 
 \subsection{Mutacje}
-Po etapie krzyżowania nowo utworzone osobniki będą poddane mutacji. Mutacji będzie podlegał jeden węzeł. Mutacja nie będzie zachodziła zawsze i w programie będzie istniało miejsce do określenia prawdopodobieństwa mutacji. W mutowanym węźle zostanie w sposób losowy zmieniona wartość.
+Po etapie krzyżowania nowo utworzone osobniki będą poddane mutacji. Mutacji będzie podlegał jeden węzeł. Nie będzie ona zachodziła zawsze i w programie będzie istniało miejsce do określenia prawdopodobieństwa mutacji. W mutowanym węźle zostanie w sposób losowy zmieniona wartość.
 
-\subsection{Nauka i testy}
+\section{Nauka i testy}
 Zaimplementujemy algorytm grający w sposób pseudolosowy i przetestujemy wynik dużej ilości gier nienauczonych osobników populacji (wszystkich po kolei po parę razy). Następnie przeprowadzimy proces nauki i ponownie przeprowadzimy ten sam test. Będziemy badać efekt nauki dla różnych wartości zmiennych w programie takich jak ilość neuronów pośrednich, ilość potyczek czy wielkość populacji aby wybrać optymalne wartości. 
 
 
 \clearpage
-
-%\input{teoria.tex}
-
-\bibliographystyle{amsplain}
-
-\nocite{*}
-
-\bibliography{przypisy}
 
 \end{document}
