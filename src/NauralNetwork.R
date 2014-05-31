@@ -1,37 +1,3 @@
-board.size <- 3
-
-# The game board is a matrix with: 1 - tic, 0 - empty, -1 - tac
-GenerateEmptyBoard <- function(){
-  matrix(0, ncol=board.size, nrow=board.size)    
-}
- 
-DisplayBoard <- function(board){
-  b <- factor(board, levels=c(-1,0,1),labels=c("X","*","O"))
-  dim(b) <- dim(board)
-  b
-}
- 
-FlipMatrix <- function(m){
-  apply(m, 2, rev)
-}
- 
-# Checking whether somebody has won
-EvaluateBoard <- function(board){
-  sums <- c(colSums(board), 
-            rowSums(board),
-            sum(diag(board)),
-            sum(diag(FlipMatrix(board)))
-            )
-   
-  if(max(sums) == board.size){
-    return(1)
-  }
-  if(min(sums) == -board.size){
-    return(-1)
-  }
-  0
-}
-
 neurons <- 1
  
 # Creating an empty neural network which we represent as a matrix of weights
