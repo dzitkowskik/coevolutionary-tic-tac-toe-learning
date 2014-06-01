@@ -3,19 +3,19 @@ winningSeries <- 3 #default winning series is 3
 
 # The game board is a matrix with: 1(tic/black, 0(empty), -1(tac/white)
 GenerateEmptyBoard <- function(){
-  matrix(0, ncol=board.size, nrow=board.size)    
+  matrix(0, ncol=board.size, nrow=board.size)
 }
- 
+
 DisplayBoard <- function(board){
-  b <- factor(board, levels=c(-1,0,1),labels=c("X","*","O"))
-  dim(b) <- dim(board)
-  b
+  b <- factor(board, levels=c(-1,0,1),labels=c("X","*","O"))
+  dim(b) <- dim(board)
+  b
 }
- 
+
 FlipMatrix <- function(m){
-  apply(m, 2, rev)
+  apply(m, 2, rev)
 }
- 
+
 # Checking whether somebody has won
 # for board size (3 to 4) we need to have (board size) Os or Xs in row
 # to win and for board size 5+ we constantly have to have 5 in a row
@@ -37,18 +37,18 @@ EvaluateBoard <- function(board){
 
 EvaluateBoardSmall <- function(board){
 	sums <- c(colSums(board), 
-            rowSums(board),
-            sum(diag(board)),
-            sum(diag(FlipMatrix(board)))
-            )
-   
-  if(max(sums) == winningSeries){
-    return(1)
-  }
-  if(min(sums) == -winningSeries){
-    return(-1)
-  }
-  0
+            rowSums(board),
+            sum(diag(board)),
+            sum(diag(FlipMatrix(board)))
+            )
+
+  if(max(sums) == winningSeries){
+    return(1)
+  }
+  if(min(sums) == -winningSeries){
+    return(-1)
+  }
+  0
 }
 
 # Returns a subboard with size NxN, where N = winningSeries
