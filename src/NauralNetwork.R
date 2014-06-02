@@ -1,32 +1,39 @@
-neededForEval <- list("neurons", "NNvsRandomPlayer", "GenerateEmptyBoard", "board.size",
-          "IsMovePossible", "Move", "RunAI", "InitNN", "EvaluateBoard", "RunNN", "winningSeries",
-          "FlipMatrix", "EvaluateBoardSmall", "GetSubBoard")
-
-
-neurons <- 1
+hiddenNeuronsCount <- 9
 
 # Creating an empty neural network which we represent as a matrix of weights
+# Neural network should have (n^2) input neurons, n hidden neurons and (n^2) output neurons
+# input and output weights will allways be 1 so we don't store them
 InitNN <- function(){
-  n.weights <- neurons * board.size ^ 2 + 2 * neurons
-  matrix(runif(n.weights),nrow=neurons)
+  n <- board.size
+  n.weights <- 2*(n*n) + hiddenNeuronsCount
+  matrix(runif(n.weights),nrow=1)
 }
 
 # Calculating the network
 RunNN <- function(nn, board){
-  w.out <- nn[,1]
-  w0.in <- nn[,2]
-  w.in <- nn[,3:ncol(nn)]
-  t(w.out) %*% tanh(w.in %*% as.vector(board) + w0.in)
+  n <- board.size
+  # output neuron weights
+  x <- n*n
+  network.out <- nn[,1:x]
+  
+  # hidden neuron weights
+  x <- x+1
+  network.hidden <- nn[,x:(x+hiddenNeuronsCount)]
+  
+  # input neuron weights
+  x <- x + hiddenNeuronsCount
+  network.in <- nn[,x:ncol(nn)]
+
+  # calculate output
+  result <- network.out * sum(tanh((network.in %*% as.vector(board)) + network.hidden))
+  tanh(result)
 }
 
 
-# Evaluating every move possible using the network
+# Running AI to choose best move
 RunAI <- function(ai, board, side){
-  res <- sapply(1:length(board), function(i){
-    b <- board
-    b[[i]] <- side
-    RunNN(ai,b) 
-  })
+  res <- RunNN(ai,b)
+
   # We don't want the AI to cheat
   res[board!=0] = -Inf
 
@@ -69,7 +76,7 @@ NNvsRandomPlayer <- function(tic.ai){
 
 TrainAI <- function(){
   # Function to evaluate how good is our network
-  Eval <- function(w){
+  Eval <- function(w, side){
     tic.ai <- matrix(w, nrow=neurons)
 
     # Playing against a random player is nondeterministic, so we need to stabilise the results
@@ -83,7 +90,14 @@ TrainAI <- function(){
   # This is a global optimisation method, so using we need an appropriate method - a differential evolution 
   # algorithm seems sufficient
   res <- DEoptim::DEoptim(Eval, rep(-0.1,len), rep(0.1,len), 
-      DEoptim::DEoptim.control(trace=1, parallelType=1, NP=20, VTR=-1.0, parVar=neededForEval))
+      DEoptim::DEoptim.control(trace=FALSE, parallelType=1, NP=20, VTR=-1.0,
+       parVar=neededForEval, itermax = 10, storepopfrom = 1, storepopfreq = 2), 1)
+
+
+  plot(res, plot.type = "storepop")
+
+  #res2 <- DEoptim::DEoptim(Eval, rep(-0.1,len), rep(0.1,len), 
+  #    DEoptim::DEoptim.control(storepopfrom=20, trace=1, parallelType=1, NP=20, VTR=-1.0, parVar=neededForEval), 2)
 
   matrix(res$optim$bestmem, nrow=neurons)
 }
