@@ -1,3 +1,8 @@
+neededForEval <- list("neurons", "NNvsRandomPlayer", "GenerateEmptyBoard", "board.size",
+          "IsMovePossible", "Move", "RunAI", "InitNN", "EvaluateBoard", "RunNN", "winningSeries",
+          "FlipMatrix", "EvaluateBoardSmall", "GetSubBoard")
+
+
 neurons <- 1
 
 # Creating an empty neural network which we represent as a matrix of weights
@@ -66,6 +71,7 @@ TrainAI <- function(){
   # Function to evaluate how good is our network
   Eval <- function(w){
     tic.ai <- matrix(w, nrow=neurons)
+
     # Playing against a random player is nondeterministic, so we need to stabilise the results
     ev <- median(sapply(1:20,function(j)mean(sapply(1:20, function(i)NNvsRandomPlayer(tic.ai)))))
 
@@ -73,13 +79,15 @@ TrainAI <- function(){
   }
 
   len <- length(InitNN())
+
   # This is a global optimisation method, so using we need an appropriate method - a differential evolution 
   # algorithm seems sufficient
   res <- DEoptim::DEoptim(Eval, rep(-0.1,len), rep(0.1,len), 
-      DEoptim::DEoptim.control(trace=1, parallelType=0, NP=10, VTR=-1.0))
+      DEoptim::DEoptim.control(trace=1, parallelType=1, NP=20, VTR=-1.0, parVar=neededForEval))
 
   matrix(res$optim$bestmem, nrow=neurons)
 }
+
 
 GetPercentResult <- function(result, times=100){
 	factor <- times/100;
@@ -88,7 +96,7 @@ GetPercentResult <- function(result, times=100){
 	sapply(frequences$Freq, function(i){i/factor})
 }
 
-DisplayPercantageResult <- function(result, times=100){
+DisplayPercantageResult <- function(res, times=100){
 	result <- sapply(GetPercentResult(res, times), function(i){ paste( toString(i), "%" )})
 	result <- t(result)
 	colnames(result) <- c("Loses", "Draws", "Wins")
