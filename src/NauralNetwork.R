@@ -1,4 +1,6 @@
 hiddenNeuronsCount <- 9
+populationSize <- 20
+loopLength <- 50
 
 # Creating an empty neural network which we represent as a matrix of weights
 # Neural network should have 2*n^2 input neurons, h hidden neurons and n^2 output neurons
@@ -109,6 +111,17 @@ TrainAI <- function(){
   #    DEoptim::DEoptim.control(storepopfrom=20, trace=1, parallelType=1, NP=20, VTR=-1.0, parVar=neededForEval), 2)
 
   matrix(res$optim$bestmem, ncol=hiddenNeuronsCount)
+  
+  
+#new coevolutionary strategy
+  populationA <- InitPopulation(populationSize)
+  populationA <- InitPopulation(populationSize)
+  for (i in 1:loopLength ) {
+    IndividualWinsA <- Compete(populationA, populationB)
+    IndividualWinsB <- Compete(populationB, populationA)
+    populationA <- NextGeneration(populationA, IndividualWinsA);
+    populationB <- NextGeneration(populationB, IndividualWinsB);
+  }
 }
 
 
