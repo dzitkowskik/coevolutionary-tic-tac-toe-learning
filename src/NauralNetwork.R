@@ -1,8 +1,11 @@
 hiddenNeuronsCount <- 9
 
 # Creating an empty neural network which we represent as a matrix of weights
-# Neural network should have (n^2) input neurons, n hidden neurons and (n^2) output neurons
-# input and output weights will allways be 1 so we don't store them
+# Neural network should have 2*n^2 input neurons, h hidden neurons and n^2 output neurons
+# In matrix we store weights of connections between neurons
+# (2*n*n)x(hiddenNeuronsCount) between input layer and hidden layer
+# (n*n)x(hiddenNeuronsCount) between hidden layer and output layer
+# For every neuron sum of input connections equals 1
 InitNN <- function(){
   n <- board.size
   n.weights <- 3*n*n*hiddenNeuronsCount
@@ -21,12 +24,15 @@ GetFieldsX <- function(side){
 RunNN <- function(nn, board){
   n <- board.size
   board.vector <- as.vector(board)
+  # input layer - n neurons of O and n neurons of X
   network.in <- c(sapply(board.vector, FUN=GetFieldsO), sapply(board.vector, FUN=GetFieldsX))
   
   a <- nn[1:(2*n*n),1:(hiddenNeuronsCount)];
+  # hidden layer - multply input layer vector by part of neural network matrix
   network.hidden <- network.in %*% a
   
   a <- nn[(2*n*n + 1):(3*n*n),1:(hiddenNeuronsCount)];
+  # output layer - multply hidden layer vector by part of neural network matrix
   a %*% t(network.hidden)
 }
 
