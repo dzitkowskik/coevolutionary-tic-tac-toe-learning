@@ -33,6 +33,9 @@ RunNN <- function(nn, board){
 
 # Running AI to choose best move
 RunAI <- function(ai, board, side){
+  if(side == -1) {
+    board <- sapply(board, function(x) -x)
+  }
   res <- RunNN(ai,board)
 
   # We don't want the AI to cheat
