@@ -1,19 +1,19 @@
-InitPopulation <- function(populationSize){
+gameNumberPerIndividual <- 10
+
+InitPopulation <- function(){
 	lapply(1:populationSize, function(i)InitNN())
 }
 
-###########################################
-# TODO: Implement this function
-###########################################
-# Runs a match between two individuals;
-# function should return 1 if first won, -1 is second and 0 for draw
-EvalFunc <- function(firstIndividual, secondIndividual){
-
-}
-
-# returns number of wins every individual from populationA
+# Returns sum of points from games for every individual from populationA
+# Games are played for each individual from populationA with gameNumberPerIndividual
+# random individuals from populationB
 Compete <- function(populationA, populationB){
-  
+
+  Play <- function(individual, oponents){
+    sum(sapply(oponents, function(x)NNvsNNGame(individual,x)))
+  }
+
+  sapply(populationA, function(i)Play(i,sample(populationB,gameNumberPerIndividual)))
 }
 
 # creates new generation

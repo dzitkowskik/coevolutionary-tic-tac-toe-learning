@@ -24,16 +24,17 @@ GetFieldsX <- function(side){
 
 # Calculating the network
 RunNN <- function(nn, board){
-  n <- board.size
+  c
   board.vector <- as.vector(board)
+
   # input layer - n neurons of O and n neurons of X
   network.in <- c(sapply(board.vector, FUN=GetFieldsO), sapply(board.vector, FUN=GetFieldsX))
-  
   a <- nn[1:(2*n*n),1:(hiddenNeuronsCount)];
+
   # hidden layer - multply input layer vector by part of neural network matrix
   network.hidden <- network.in %*% a
-  
   a <- nn[(2*n*n + 1):(3*n*n),1:(hiddenNeuronsCount)];
+
   # output layer - multply hidden layer vector by part of neural network matrix
   a %*% t(network.hidden)
 }
@@ -64,27 +65,67 @@ IsMovePossible <- function(board){
   length(which(board==0)) > 0
 }
 
+# AI with neural network plays against rantom player
+# if AI wins it gains +1 point, if there is a draw 0 points
+# AI gains -2 points in case of loss
+NNvsRandomPlayerGame <- function(tic.ai){
+  # AI side
+  aiSide <- sample(c(-1,1),1)
 
-
-NNvsRandomPlayer <- function(tic.ai){
+  # side which starts the game
   side <- sample(c(-1,1),1)
+
   board <- GenerateEmptyBoard() 
   eval <- 0
 
+  # play a game
   while(eval == 0 && IsMovePossible(board)){
-    if(side==1){
+    if(side==aiSide){
       board <- Move(tic.ai, board, side)
     } else {
-      # Make a valid move completely at random and see what happens
+      # Make a valid move completely at random
       move <- sample(which(board==0),1)
       board[[move]] <- side
     }
     eval <- EvaluateBoard(board)
     side <- side * -1
   }
-  eval
+
+  # return result
+  if(eval == firstPlayerSide) return(1)
+  if(eval == 0) return(0)
+  return(-2)
 }
 
+# AI with neural network plays against another one
+# if first one wins it gains +1 point, if there is a draw 0 points
+# AI gains -2 points in case of loss
+NNvsNNGame <- function(first, second){
+  # side of first player
+  firstPlayerSide <- sample(c(-1,1),1)
+
+  # side which starts the game
+  side <- sample(c(-1,1),1)
+
+  board <- GenerateEmptyBoard() 
+  eval <- 0
+
+  # play a game
+  while(eval == 0 && IsMovePossible(board)){
+    if(side==firstPlayerSide){
+      board <- Move(first, board, side)
+    } else {
+      board <- Move(second, board, side)
+    }
+    eval <- EvaluateBoard(board)
+    side <- side * -1
+  }
+
+  # return result
+  if(eval == firstPlayerSide) return(1)
+  if(eval == 0) return(0)
+  return(-2)
+}
 
 TrainAI <- function(){
   # Function to evaluate how good is our network
@@ -92,7 +133,7 @@ TrainAI <- function(){
     tic.ai <- matrix(w, ncol=hiddenNeuronsCount)
 
     # Playing against a random player is nondeterministic, so we need to stabilise the results
-    ev <- median(sapply(1:20,function(j)mean(sapply(1:20, function(i)NNvsRandomPlayer(tic.ai)))))
+    ev <- median(sapply(1:20,function(j)mean(sapply(1:20, function(i)NNvsRandomPlayerGame(tic.ai)))))
 
     ev <- -1*(ev)
   }
@@ -106,14 +147,10 @@ TrainAI <- function(){
 
 
   plot(res, plot.type = "storepop")
-
-  #res2 <- DEoptim::DEoptim(Eval, rep(-0.1,len), rep(0.1,len), 
-  #    DEoptim::DEoptim.control(storepopfrom=20, trace=1, parallelType=1, NP=20, VTR=-1.0, parVar=neededForEval), 2)
-
   matrix(res$optim$bestmem, ncol=hiddenNeuronsCount)
   
   
-#new coevolutionary strategy
+  #new coevolutionary strategy
   populationA <- InitPopulation(populationSize)
   populationA <- InitPopulation(populationSize)
   for (i in 1:loopLength ) {
