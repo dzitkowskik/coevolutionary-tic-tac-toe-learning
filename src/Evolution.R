@@ -1,4 +1,5 @@
 gameNumberPerIndividual <- 10
+mutationProbability <- 0.5
 
 InitPopulation <- function(){
 	lapply(1:populationSize, function(i)InitNN())
@@ -33,4 +34,24 @@ NextGeneration <- function(population, IndividualWins){
   #mutation
   #for every individual draw a neuron (from hidden and output layer)
   #mutate every input connection of that neuron
+}
+
+# chooses one neuron from hidden layer from individual and with a probability
+# of mutationProbability mutates every input and output connection
+# A sum of input connectios as well as a sum of output connections must always be equal to 1 
+Mutate <- function(individual){
+  n <- board.size
+
+  # decide whether to mutate
+  decision <- runif(1, min=0, max=1)
+  if(decision > mutationProbability){
+    return(individual)
+  }
+
+  # choose neuron
+  neuron <- sample(1:hiddenNeuronsCount, 1)
+
+  # mutate
+  individual[,neuron] <- matrix(runif(3*n*n, min=0, max=1),ncol=1)
+  NormalizeConnections(individual)
 }

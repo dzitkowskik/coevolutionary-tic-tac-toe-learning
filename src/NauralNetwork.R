@@ -11,7 +11,18 @@ loopLength <- 50
 InitNN <- function(){
   n <- board.size
   n.weights <- 3*n*n*hiddenNeuronsCount
-  matrix(runif(n.weights, min=0, max=1),ncol=hiddenNeuronsCount)
+  nn <- matrix(runif(n.weights, min=0, max=1),ncol=hiddenNeuronsCount)
+
+  # normalize input and output connections
+  # for each neuron in hidden layer sum of input connections must be equal to 1
+  # as well as output connections (sum must equals 1) 
+  NormalizeConnections(nn)
+}
+
+NormalizeConnections <- function(nn){
+  nn[1:(2*n*n),] <- apply(nn[1:(2*n*n),], 2, function(col){ sapply(col, function(y)y/sum(col)) })
+  nn[(2*n*n + 1):(3*n*n),] <- apply(nn[(2*n*n + 1):(3*n*n),], 2, function(col){ sapply(col, function(y)y/sum(col)) })
+  nn
 }
 
 GetFieldsO <- function(side){
@@ -24,7 +35,6 @@ GetFieldsX <- function(side){
 
 # Calculating the network
 RunNN <- function(nn, board){
-  c
   board.vector <- as.vector(board)
 
   # input layer - n neurons of O and n neurons of X
