@@ -1,6 +1,8 @@
 gameNumberPerIndividual <- 10
 mutationProbability <- 0.5
 
+# Creates populationSize new individuals for population
+# Returns a list of matrices
 InitPopulation <- function(){
 	lapply(1:populationSize, function(i)InitNN())
 }
@@ -36,7 +38,14 @@ NextGeneration <- function(population, IndividualWins){
   #mutate every input connection of that neuron
 }
 
-# chooses one neuron from hidden layer from individual and with a probability
+# Creates a new infividual with neurons from hidden layer from individualA
+# or individualB (randomly choosed) each copied neuron stays with his input
+# and output connection weights
+Crossover <- function(individualA, individualB){
+
+}
+
+# Chooses one neuron from hidden layer from individual and with a probability
 # of mutationProbability mutates every input and output connection
 # A sum of input connectios as well as a sum of output connections must always be equal to 1 
 Mutate <- function(individual){
