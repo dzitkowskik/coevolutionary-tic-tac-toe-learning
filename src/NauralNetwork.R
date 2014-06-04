@@ -1,5 +1,5 @@
-hiddenNeuronsCount <- 9
-populationSize <- 20
+hiddenNeuronsCount <- 4
+populationSize <- 5
 loopLength <- 50
 
 # Creating an empty neural network which we represent as a matrix of weights
@@ -20,8 +20,10 @@ InitNN <- function(){
 }
 
 NormalizeConnections <- function(nn){
+  #connections to hidden layer
   nn[1:(2*n*n),] <- apply(nn[1:(2*n*n),], 2, function(col){ sapply(col, function(y)y/sum(col)) })
-  nn[(2*n*n + 1):(3*n*n),] <- apply(nn[(2*n*n + 1):(3*n*n),], 2, function(col){ sapply(col, function(y)y/sum(col)) })
+  #connections to output layer
+  nn[(2*n*n + 1):(3*n*n),] <- t(apply(nn[(2*n*n + 1):(3*n*n),], 1, function(row){ sapply(row, function(y)y/sum(row)) }))
   nn
 }
 
