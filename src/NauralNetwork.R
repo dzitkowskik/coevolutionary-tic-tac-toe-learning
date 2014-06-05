@@ -1,6 +1,6 @@
-hiddenNeuronsCount <- 4
-loopLength <- 10
-numberOfTestGames <- 10
+hiddenNeuronsCount <- 14
+evolutionIterations <- 500
+numberOfTestGames <- 1000
 neededForEval <- list("hiddenNeuronsCount", "NNvsRandomPlayerGame", "GenerateEmptyBoard", "board.size",
           "IsMovePossible", "Move", "RunAI", "InitNN", "EvaluateBoard", "RunNN", "winningSeries",
           "FlipMatrix", "EvaluateBoardSmall", "GetSubBoard", "GetFieldsO", "GetFieldsX")
@@ -161,7 +161,7 @@ TrainAI <- function(){
   # This is a global optimisation method, so using we need an appropriate method - a differential evolution 
   # algorithm seems sufficient
   res <- DEoptim::DEoptim(Eval, rep(0,len), rep(1,len), 
-                          DEoptim::DEoptim.control(trace=0, NP=10, VTR=-1.0, itermax=loopLength,
+                          DEoptim::DEoptim.control(trace=0, NP=10, VTR=-1.0, itermax=evolutionIterations,
                           parallelType=1, parVar=neededForEval))
   
   evolutionaryResult = matrix(res$optim$bestmem, ncol=hiddenNeuronsCount)
@@ -170,7 +170,7 @@ TrainAI <- function(){
   #new coevolutionary strategy
   populationA <- InitPopulation()
   populationB <- InitPopulation()
-  for (i in 1:loopLength ) {
+  for (i in 1:evolutionIterations ) {
     individualWinsA <- Compete(populationA, populationB)
     individualWinsB <- Compete(populationB, populationA)
     populationA <- NextGeneration(populationA, individualWinsA)

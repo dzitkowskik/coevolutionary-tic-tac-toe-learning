@@ -1,6 +1,7 @@
-gameNumberPerIndividual <- 10
+gameNumberPerIndividual <- 25
 mutationProbability <- 0.5
-populationSize <- 15
+populationSize <- 60
+useCrossoverVersion <- 1
 
 # Creates populationSize new individuals for population
 # Returns a list of matrices
@@ -44,7 +45,11 @@ NextGeneration <- function(population, IndividualWins){
   prob <- sapply(IndividualWins, FUN=GetProbability, sum(IndividualWins))
   for (i in 2:populationSize) {
     drawn <- sample(population, 2, FALSE, prob)
-    nextGeneration[[i]] <- Mutate(Crossover(drawn[[1]], drawn[[2]]))
+    if(useCrossoverVersion == 2){
+      nextGeneration[[i]] <- Mutate(Crossover2(drawn[[1]], drawn[[2]]))
+    } else {
+      nextGeneration[[i]] <- Mutate(Crossover(drawn[[1]], drawn[[2]]))
+    }
   }
   #mutation
   #for every individual draw a neuron (from hidden and output layer)
@@ -53,9 +58,9 @@ NextGeneration <- function(population, IndividualWins){
   nextGeneration
 }
 
-# Creates a new individual with neurons from hidden layer from individualA
-# or individualB (randomly choosed) each copied neuron stays with his input
-# and output connection weights
+# Creates a new individual with input connections from hidden layer and input connections 
+# from output neurons from individualA or individualB (randomly choosed) each copied neuron 
+# stays with his input and output connection weights
 Crossover <- function(individualA, individualB){
   test<-individualA
   bool <- c(TRUE, FALSE)
@@ -65,6 +70,19 @@ Crossover <- function(individualA, individualB){
   test[(2*n*n + 1):(3*n*n),] <- t(apply(test[(2*n*n + 1):(3*n*n),], 1, function(row){ sapply(row, function(y)row[1]) }))
   ifelse(test, individualA, individualB)
 }
+
+# Creates a new individual with neurons from hidden layer from individualA
+# or individualB (randomly choosed) each copied neuron stays with his input
+# and output connection weights
+Crossover2 <- function(individualA, individualB){
+  test<-individualA
+  bool <- c(TRUE, FALSE)
+  test[1,] <- sample(bool, hiddenNeuronsCount, TRUE)
+  test <- apply(test, 2, function(col){ sapply(col, function(y)col[1]) })
+  crossoverResult <- ifelse(test, individualA, individualB)
+  NormalizeConnections(crossoverResult)
+}
+
 
 # Chooses one neuron from hidden layer from individual and with a probability
 # of mutationProbability mutates every input and output connection
