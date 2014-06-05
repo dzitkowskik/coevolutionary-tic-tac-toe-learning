@@ -31,7 +31,7 @@ GetProbability <- function(x, s) {
 # params: population and number of wins
 NextGeneration <- function(population, IndividualWins){
   #add the best of individuals for next generation
-  nextGeneration <- population
+  nextGeneration <- list()
   nextGeneration[[1]] <- population[[which.max(IndividualWins)]]
 
   #crossover
