@@ -110,9 +110,9 @@ NNvsRandomPlayerGame <- function(tic.ai){
   }
 
   # return result
-  if(eval == aiSide) return(1)
-  if(eval == 0) return(0)
-  return(-2)
+  if(eval == aiSide) return(3)
+  if(eval == 0) return(2)
+  return(0)
 }
 
 # AI with neural network plays against another one
@@ -140,9 +140,9 @@ NNvsNNGame <- function(first, second){
   }
 
   # return result
-  if(eval == firstPlayerSide) return(1)
-  if(eval == 0) return(0)
-  return(-2)
+  if(eval == firstPlayerSide) return(3)
+  if(eval == 0) return(2)
+  return(0)
 }
 
 NNvsNN2Games <- function(first, second){
@@ -182,9 +182,9 @@ NNvsNN2Games <- function(first, second){
   }
   
   # return result
-  if(eval+eval2 > firstPlayerSide) return(1)
-  if(eval+eval2 == 0) return(0)
-  return(-2)
+  if(eval+eval2 > 0) return(3)
+  if(eval+eval2 == 0) return(2)
+  return(0)
 }
 
 TrainAI <- function(){  

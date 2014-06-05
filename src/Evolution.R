@@ -97,9 +97,10 @@ Mutate <- function(individual){
   }
 
   # choose neuron
-  neuron <- sample(1:hiddenNeuronsCount, 1)
+  col <- sample(1:hiddenNeuronsCount)
+  row <- sample(1:3*n*n)
 
   # mutate
-  individual[,neuron] <- matrix(runif(3*n*n, min=0, max=1),ncol=1)
+  individual[row,col] <- runif(1, min=0, max=1)
   NormalizeConnections(individual)
 }
