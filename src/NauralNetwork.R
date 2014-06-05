@@ -187,27 +187,34 @@ TrainAI <- function(){
     winner <- populationB[winnerB]
   }
   coevolutionaryWinner = winner[[1]]
-  print(coevolutionaryWinner)
 
   # run games between best coevolutionary individual and evolutionaryResult
   testGames <- sapply(1:numberOfTestGames, function(i){ NNvsNNGame(coevolutionaryWinner, evolutionaryResult) })
   print("Games between coevolutionary AI and evolutionary AI:")
-  GetPercentResult(testGames, numberOfTestGames)
+  print(GetPercentResult(testGames))
 
   # run games between best coevolutionary individual and random player
+  testGames <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(coevolutionaryWinner) })
+  print("Games between coevolutionary AI and random player")
+  print(GetPercentResult(testGames))
 
   # run games between best evolutionaryResult and random player
+  testGames <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(evolutionaryResult) })
+  print("Games between evolutionary AI and random player")
+  print(GetPercentResult(testGames))
 
-  # show results and statistics
-
+  coevolutionaryWinner
 }
 
 
-GetPercentResult <- function(resTable, times=100){
-	factor <- times/100;
-	frequences <- as.data.frame(table(resTable))
-  print(frequences)
-	sapply(frequences$Freq, function(i){i/factor})
+GetPercentResult <- function(resTable){
+	loses = length(resTable[resTable=="-2"])
+  wins = length(resTable[resTable=="1"])
+  draws = length(resTable[resTable=="0"])
+  all = loses + wins + draws
+  result <- as.matrix(c(loses, draws, wins, all))
+  rownames(result) <- c("Loses", "Draws", "Wins", "All")
+  result
 }
 
 # TODO: FIX THIS FUNCTION TO SHOW RESULTS NICELY:)
