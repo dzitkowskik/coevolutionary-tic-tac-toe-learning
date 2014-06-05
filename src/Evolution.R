@@ -15,7 +15,7 @@ InitPopulation <- function(){
 Compete <- function(populationA, populationB){
 
   Play <- function(individual, oponents){
-    sum(sapply(oponents, function(x)NNvsNNGame(individual,x)))
+    sum(sapply(oponents, function(x)NNvsNN2Games(individual,x)))
   }
 
   results <- sapply(populationA, function(i)Play(i,sample(populationB,gameNumberPerIndividual)))

@@ -145,6 +145,48 @@ NNvsNNGame <- function(first, second){
   return(-2)
 }
 
+NNvsNN2Games <- function(first, second){
+  # side of first player
+  firstPlayerSide <- 1
+  
+  # side which starts the game
+  side <- 1
+  
+  board <- GenerateEmptyBoard() 
+  eval <- 0
+  
+  # play a game
+  while(eval == 0 && IsMovePossible(board)){
+    if(side==firstPlayerSide){
+      board <- Move(first, board, side)
+    } else {
+      board <- Move(second, board, side)
+    }
+    eval <- EvaluateBoard(board)
+    side <- side * -1
+  }
+  
+  side <- -1
+  board <- GenerateEmptyBoard() 
+  eval2 <- 0
+  
+  # play a game
+  while(eval2 == 0 && IsMovePossible(board)){
+    if(side==firstPlayerSide){
+      board <- Move(first, board, side)
+    } else {
+      board <- Move(second, board, side)
+    }
+    eval2 <- EvaluateBoard(board)
+    side <- side * -1
+  }
+  
+  # return result
+  if(eval+eval2 > firstPlayerSide) return(1)
+  if(eval+eval2 == 0) return(0)
+  return(-2)
+}
+
 TrainAI <- function(){
   # Function to evaluate how good is our network
   Eval <- function(w, side){
@@ -189,7 +231,7 @@ TrainAI <- function(){
   coevolutionaryWinner = winner[[1]]
 
   # run games between best coevolutionary individual and evolutionaryResult
-  testGames1 <- sapply(1:numberOfTestGames, function(i){ NNvsNNGame(coevolutionaryWinner, evolutionaryResult) })
+  testGames1 <- sapply(1:numberOfTestGames, function(i){ NNvsNN2Games(coevolutionaryWinner, evolutionaryResult) })
   print("Games between coevolutionary AI and evolutionary AI:")
   print(GetPercentResult(testGames1))
 
