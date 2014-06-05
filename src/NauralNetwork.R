@@ -214,7 +214,7 @@ TrainAI <- function(){
   print("Games between coevolutionary AI and random player")
   print(GetPercentResult(testGames2))
 
-  list(testGames1, testGames2, testGames3)
+  testGames2
 }
 
 
