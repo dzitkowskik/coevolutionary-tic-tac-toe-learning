@@ -30,7 +30,9 @@ GetProbability <- function(x, s) {
 # params: population and number of wins
 NextGeneration <- function(population, IndividualWins){
   #add the best of individuals for next generation
-  
+  nextGeneration <- population
+  nextGeneration[[1]] <- population[[which.max(IndividualWins)]]
+
   #crossover
   #1. draw two individuals for every crossover - probabilitiy based on winnings
   #2. draw for every neuron (from two individuals)
@@ -40,8 +42,7 @@ NextGeneration <- function(population, IndividualWins){
   # => Copy every input connection of first neruonfrom individualC to individualNew
   #same for other neurons...
   prob <- sapply(IndividualWins, FUN=GetProbability, sum(IndividualWins))
-  nextGeneration = population
-  for (i in 1:populationSize) {
+  for (i in 2:populationSize) {
     drawn <- sample(population, 2, FALSE, prob)
     nextGeneration[[i]] <- Mutate(Crossover(drawn[[1]], drawn[[2]]))
   }
