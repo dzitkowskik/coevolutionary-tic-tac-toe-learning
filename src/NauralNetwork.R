@@ -219,9 +219,9 @@ TrainAI <- function(){
 
 
 GetPercentResult <- function(resTable){
-	loses = length(resTable[resTable=="-2"])
-  wins = length(resTable[resTable=="1"])
-  draws = length(resTable[resTable=="0"])
+	loses = length(resTable[resTable=="0"])
+  wins = length(resTable[resTable=="3"])
+  draws = length(resTable[resTable=="2"])
   all = loses + wins + draws
   result <- as.matrix(c(loses, draws, wins, all))
   rownames(result) <- c("Loses", "Draws", "Wins", "All")
