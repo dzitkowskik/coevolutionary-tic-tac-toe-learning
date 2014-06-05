@@ -235,5 +235,18 @@ DisplayPercantageResult <- function(percentResult){
 	colnames(result) <- c("Loses", "Draws", "Wins")
 	t(result)
 }
+
+SetParallel <- function(){
+  library(doParallel)
+  library(plyr)
+  
+  nodes <- detectCores()
+  cl <- makeCluster(nodes)
+  registerDoParallel(cl)
+  
+  aaply(ozone, 1, mean,.parallel=TRUE)
+  
+  stopCluster(cl)
+}
 	
 	
