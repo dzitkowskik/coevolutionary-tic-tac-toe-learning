@@ -187,29 +187,8 @@ NNvsNN2Games <- function(first, second){
   return(-2)
 }
 
-TrainAI <- function(){
-  # Function to evaluate how good is our network
-  Eval <- function(w, side){
-    tic.ai <- matrix(w, ncol=hiddenNeuronsCount)
-
-    # Playing against a random player is nondeterministic, so we need to stabilise the results
-    ev <- median(sapply(1:20,function(j)mean(sapply(1:20, function(i)NNvsRandomPlayerGame(tic.ai)))))
-
-    ev <- -1*(ev)
-  }
-
-  len <- length(InitNN())
-
-  # This is a global optimisation method, so using we need an appropriate method - a differential evolution 
-  # algorithm seems sufficient
-  res <- DEoptim::DEoptim(Eval, rep(0,len), rep(1,len), 
-                          DEoptim::DEoptim.control(trace=0, NP=10, VTR=-1.0, itermax=evolutionIterations,
-                          parallelType=1, parVar=neededForEval))
-  
-  evolutionaryResult = matrix(res$optim$bestmem, ncol=hiddenNeuronsCount)
-  print(evolutionaryResult)
-  
-  #new coevolutionary strategy
+TrainAI <- function(){  
+  #coevolutionary strategy
   populationA <- InitPopulation()
   populationB <- InitPopulation()
   for (i in 1:evolutionIterations ) {
@@ -230,20 +209,10 @@ TrainAI <- function(){
   }
   coevolutionaryWinner = winner[[1]]
 
-  # run games between best coevolutionary individual and evolutionaryResult
-  testGames1 <- sapply(1:numberOfTestGames, function(i){ NNvsNN2Games(coevolutionaryWinner, evolutionaryResult) })
-  print("Games between coevolutionary AI and evolutionary AI:")
-  print(GetPercentResult(testGames1))
-
   # run games between best coevolutionary individual and random player
   testGames2 <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(coevolutionaryWinner) })
   print("Games between coevolutionary AI and random player")
   print(GetPercentResult(testGames2))
-
-  # run games between best evolutionaryResult and random player
-  testGames3 <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(evolutionaryResult) })
-  print("Games between evolutionary AI and random player")
-  print(GetPercentResult(testGames3))
 
   list(testGames1, testGames2, testGames3)
 }
