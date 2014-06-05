@@ -189,21 +189,21 @@ TrainAI <- function(){
   coevolutionaryWinner = winner[[1]]
 
   # run games between best coevolutionary individual and evolutionaryResult
-  testGames <- sapply(1:numberOfTestGames, function(i){ NNvsNNGame(coevolutionaryWinner, evolutionaryResult) })
+  testGames1 <- sapply(1:numberOfTestGames, function(i){ NNvsNNGame(coevolutionaryWinner, evolutionaryResult) })
   print("Games between coevolutionary AI and evolutionary AI:")
-  print(GetPercentResult(testGames))
+  print(GetPercentResult(testGames1))
 
   # run games between best coevolutionary individual and random player
-  testGames <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(coevolutionaryWinner) })
+  testGames2 <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(coevolutionaryWinner) })
   print("Games between coevolutionary AI and random player")
-  print(GetPercentResult(testGames))
+  print(GetPercentResult(testGames2))
 
   # run games between best evolutionaryResult and random player
-  testGames <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(evolutionaryResult) })
+  testGames3 <- sapply(1:numberOfTestGames, function(i){ NNvsRandomPlayerGame(evolutionaryResult) })
   print("Games between evolutionary AI and random player")
-  print(GetPercentResult(testGames))
+  print(GetPercentResult(testGames3))
 
-  coevolutionaryWinner
+  list(testGames1, testGames2, testGames3)
 }
 
 
