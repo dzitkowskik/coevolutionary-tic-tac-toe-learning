@@ -43,7 +43,7 @@ NextGeneration <- function(population, IndividualWins){
   # => Copy every input connection of first neruonfrom individualC to individualNew
   #same for other neurons...
   prob <- sapply(IndividualWins, FUN=GetProbability, sum(IndividualWins))
-  foreach (i in 2:populationSize) %dopar% {
+  foreach (i=2:populationSize) %dopar% {
     drawn <- sample(population, 2, FALSE, prob)
     if(useCrossoverVersion == 2){
       nextGeneration[[i]] <- Mutate(Crossover2(drawn[[1]], drawn[[2]]))
