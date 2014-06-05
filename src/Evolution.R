@@ -1,5 +1,6 @@
 gameNumberPerIndividual <- 10
 mutationProbability <- 0.5
+populationSize <- 15
 
 # Creates populationSize new individuals for population
 # Returns a list of matrices
@@ -16,7 +17,9 @@ Compete <- function(populationA, populationB){
     sum(sapply(oponents, function(x)NNvsNNGame(individual,x)))
   }
 
-  sapply(populationA, function(i)Play(i,sample(populationB,gameNumberPerIndividual)))
+  results <- sapply(populationA, function(i)Play(i,sample(populationB,gameNumberPerIndividual)))
+  minResult <- min(results)
+  sapply(results, function(x)(x - minResult))
 }
 
 GetProbability <- function(x, s) {
@@ -38,9 +41,9 @@ NextGeneration <- function(population, IndividualWins){
   #same for other neurons...
   prob <- sapply(IndividualWins, FUN=GetProbability, sum(IndividualWins))
   nextGeneration = population
-  for (i in 1:populationSize ) {
-    drawn <- sample(popul, 2, FALSE, prob)
-    nextGeneration[i] <- Mutate(Crossover(drawn[[1]], drawn[[2]]))
+  for (i in 1:populationSize) {
+    drawn <- sample(population, 2, FALSE, prob)
+    nextGeneration[[i]] <- Mutate(Crossover(drawn[[1]], drawn[[2]]))
   }
   #mutation
   #for every individual draw a neuron (from hidden and output layer)
@@ -49,7 +52,7 @@ NextGeneration <- function(population, IndividualWins){
   nextGeneration
 }
 
-# Creates a new infividual with neurons from hidden layer from individualA
+# Creates a new individual with neurons from hidden layer from individualA
 # or individualB (randomly choosed) each copied neuron stays with his input
 # and output connection weights
 Crossover <- function(individualA, individualB){

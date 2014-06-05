@@ -1,6 +1,10 @@
 hiddenNeuronsCount <- 4
-populationSize <- 5
-loopLength <- 50
+loopLength <- 10
+numberOfTestGames <- 10
+neededForEval <- list("hiddenNeuronsCount", "NNvsRandomPlayerGame", "GenerateEmptyBoard", "board.size",
+          "IsMovePossible", "Move", "RunAI", "InitNN", "EvaluateBoard", "RunNN", "winningSeries",
+          "FlipMatrix", "EvaluateBoardSmall", "GetSubBoard", "GetFieldsO", "GetFieldsX")
+
 
 # Creating an empty neural network which we represent as a matrix of weights
 # Neural network should have 2*n^2 input neurons, h hidden neurons and n^2 output neurons
@@ -20,6 +24,7 @@ InitNN <- function(){
 }
 
 NormalizeConnections <- function(nn){
+  n <- board.size
   #connections to hidden layer
   nn[1:(2*n*n),] <- apply(nn[1:(2*n*n),], 2, function(col){ sapply(col, function(y)y/sum(col)) })
   #connections to output layer
@@ -37,15 +42,16 @@ GetFieldsX <- function(side){
 
 # Calculating the network
 RunNN <- function(nn, board){
+  n <- board.size
   board.vector <- as.vector(board)
 
   # input layer - n neurons of O and n neurons of X
   network.in <- c(sapply(board.vector, FUN=GetFieldsO), sapply(board.vector, FUN=GetFieldsX))
-  a <- nn[1:(2*n*n),1:(hiddenNeuronsCount)];
+  a <- nn[1:(2*n*n),];
 
   # hidden layer - multply input layer vector by part of neural network matrix
   network.hidden <- network.in %*% a
-  a <- nn[(2*n*n + 1):(3*n*n),1:(hiddenNeuronsCount)];
+  a <- nn[(2*n*n + 1):(3*n*n),];
 
   # output layer - multply hidden layer vector by part of neural network matrix
   a %*% t(network.hidden)
@@ -104,7 +110,7 @@ NNvsRandomPlayerGame <- function(tic.ai){
   }
 
   # return result
-  if(eval == firstPlayerSide) return(1)
+  if(eval == aiSide) return(1)
   if(eval == 0) return(0)
   return(-2)
 }
@@ -155,34 +161,58 @@ TrainAI <- function(){
   # This is a global optimisation method, so using we need an appropriate method - a differential evolution 
   # algorithm seems sufficient
   res <- DEoptim::DEoptim(Eval, rep(0,len), rep(1,len), 
-                          DEoptim::DEoptim.control(trace=1, parallelType=0, NP=10, VTR=-1.0))
-
-
-  plot(res, plot.type = "storepop")
-  matrix(res$optim$bestmem, ncol=hiddenNeuronsCount)
+                          DEoptim::DEoptim.control(trace=0, NP=10, VTR=-1.0, itermax=loopLength,
+                          parallelType=1, parVar=neededForEval))
   
+  evolutionaryResult = matrix(res$optim$bestmem, ncol=hiddenNeuronsCount)
+  print(evolutionaryResult)
   
   #new coevolutionary strategy
-  populationA <- InitPopulation(populationSize)
-  populationA <- InitPopulation(populationSize)
+  populationA <- InitPopulation()
+  populationB <- InitPopulation()
   for (i in 1:loopLength ) {
-    IndividualWinsA <- Compete(populationA, populationB)
-    IndividualWinsB <- Compete(populationB, populationA)
-    populationA <- NextGeneration(populationA, IndividualWinsA);
-    populationB <- NextGeneration(populationB, IndividualWinsB);
+    individualWinsA <- Compete(populationA, populationB)
+    individualWinsB <- Compete(populationB, populationA)
+    populationA <- NextGeneration(populationA, individualWinsA)
+    populationB <- NextGeneration(populationB, individualWinsB)
   }
+
+  # choose best individual from population A and B
+  individualWinsA <- Compete(populationA, populationB)
+  individualWinsB <- Compete(populationB, populationA)
+  winnerA <- which.max(individualWinsA)
+  winnerB <- which.max(individualWinsB)
+  winner <- populationA[winnerA]
+  if(individualWinsB[winnerB] > individualWinsA[winnerA]){
+    winner <- populationB[winnerB]
+  }
+  coevolutionaryWinner = winner[[1]]
+  print(coevolutionaryWinner)
+
+  # run games between best coevolutionary individual and evolutionaryResult
+  testGames <- sapply(1:numberOfTestGames, function(i){ NNvsNNGame(coevolutionaryWinner, evolutionaryResult) })
+  print("Games between coevolutionary AI and evolutionary AI:")
+  GetPercentResult(testGames, numberOfTestGames)
+
+  # run games between best coevolutionary individual and random player
+
+  # run games between best evolutionaryResult and random player
+
+  # show results and statistics
+
 }
 
 
-GetPercentResult <- function(result, times=100){
+GetPercentResult <- function(resTable, times=100){
 	factor <- times/100;
-	resTable <- sapply(1:times, function(i)NNvsRandomPlayer(result))
 	frequences <- as.data.frame(table(resTable))
+  print(frequences)
 	sapply(frequences$Freq, function(i){i/factor})
 }
 
-DisplayPercantageResult <- function(res, times=100){
-	result <- sapply(GetPercentResult(res, times), function(i){ paste( toString(i), "%" )})
+# TODO: FIX THIS FUNCTION TO SHOW RESULTS NICELY:)
+DisplayPercantageResult <- function(percentResult){
+	result <- sapply(percentResult, function(i){ paste( toString(i), "%" )})
 	result <- t(result)
 	colnames(result) <- c("Loses", "Draws", "Wins")
 	t(result)
