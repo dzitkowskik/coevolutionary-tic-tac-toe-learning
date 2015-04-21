@@ -2,6 +2,9 @@
 
 Coevolutionary artificial intelligence learning algorithm for TicTacToe game with N x N board using Neural Networks. 
 
+PL: Koewolucyjni gracze
+Zastosować podejście koewolucyjne do wytrenowania modeli/strategii - graczy w grze kółko i krzyżyk (w wersji na planszy NxN, gdzie wygraną zapewnia linia długości k)
+
 ### What is this repository for? ###
 
 * It tests how coevolutionary approach to AI learning performs for TicTacToe game.
